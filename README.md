@@ -4,6 +4,8 @@ I was super tired of dealing with clunky, buggy dropdowns and tooltips. Menu Eng
 
 I also set it up to build dual ESM and CommonJS bundles using `tsup`, so it works perfectly in any project.
 
+By the way, if you're reading this on dark mode via the npmjs.com website, I am so sorry. I'm not sure who thought it was a good idea to put dark text in front of a dark background, but whatever. Anyway, here's the link to the package: https://www.npmjs.com/package/menu-engine
+
 ---
 
 ## Features
