@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { menuBuilder } from "../registry.ts";
+import { menus } from "../registry.ts";
 import { MenuStore } from "../store.ts";
 import { compileTriggerRules, createTriggerEvaluator, transitionState } from "../engine.ts";
 import type { Menu, MenuEngine } from "../core.ts";
@@ -421,21 +421,21 @@ describe("Menu Engine State Machine & Store Tests", () => {
     });
   });
 
-  describe("9. Global MenuRegistry (menuBuilder)", () => {
+  describe("9. Global MenuRegistry (menus)", () => {
     it("should register and fetch global menu instances", () => {
       const config = { id: "test-menu", type: "popover" } as const;
-      const store = menuBuilder.create(config);
+      const store = menus.create(config);
 
       expect(store).toBeInstanceOf(MenuStore);
-      expect(menuBuilder.get("test-menu")).toBe(store);
+      expect(menus.get("test-menu")).toBe(store);
 
       // Re-creating with same ID returns cached store
-      const store2 = menuBuilder.create(config);
+      const store2 = menus.create(config);
       expect(store2).toBe(store);
 
       // Can remove from registry
-      menuBuilder.remove("test-menu");
-      expect(menuBuilder.get("test-menu")).toBeUndefined();
+      menus.remove("test-menu");
+      expect(menus.get("test-menu")).toBeUndefined();
     });
   });
 

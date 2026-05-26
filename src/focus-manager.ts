@@ -10,7 +10,9 @@
 export type FocusableItem = {
 	/** Stable identifier for the item, scoped to this manager. */
 	id: string;
+	/** The element to focus. */
 	el: HTMLElement;
+	/** Whether the item is disabled. */
 	disabled: boolean;
 	/** Text used for typeahead matching. Falls back to el.textContent. */
 	textValue?: string;
@@ -24,13 +26,14 @@ type Listener = () => void;
 
 const TYPEAHEAD_RESET_MS = 500;
 
+/** Manages focus for a single menu. */
 export class MenuFocusManager {
 	private items: FocusableItem[] = [];
 	private currentId: string | null = null;
 	private listeners = new Set<Listener>();
-	private typeaheadBuf = '';
+	private typeaheadBuf = "";
 	private typeaheadTimer: ReturnType<typeof setTimeout> | null = null;
-	/** Optional handler for ArrowLeft — typically wired by a submenu's owner. */
+
 	private arrowLeftHandler: (() => void) | null = null;
 
 	subscribe = (listener: Listener) => {
@@ -49,7 +52,7 @@ export class MenuFocusManager {
 	getItems = (): readonly FocusableItem[] => this.items;
 
 	register = (item: FocusableItem): (() => void) => {
-		// Replace if same id re-registers (e.g. ref changed after a re-render).
+		// replace if same id re-registers (e.g., ref changed after a re-render)
 		const idx = this.items.findIndex((i) => i.id === item.id);
 		if (idx >= 0) this.items[idx] = item;
 		else this.items.push(item);
@@ -80,8 +83,8 @@ export class MenuFocusManager {
 		for (const item of this.items) {
 			const isCurrent = item.id === this.currentId;
 			item.el.tabIndex = isCurrent ? 0 : -1;
-			if (isCurrent) item.el.setAttribute('data-current', '');
-			else item.el.removeAttribute('data-current');
+			if (isCurrent) item.el.setAttribute("data-current", "");
+			else item.el.removeAttribute("data-current");
 		}
 	}
 
@@ -107,7 +110,9 @@ export class MenuFocusManager {
 	};
 
 	current = (): FocusableItem | null =>
-		this.currentId ? this.items.find((i) => i.id === this.currentId) ?? null : null;
+		this.currentId
+			? (this.items.find((i) => i.id === this.currentId) ?? null)
+			: null;
 
 	first = () => {
 		const item = this.enabled()[0];
@@ -123,7 +128,9 @@ export class MenuFocusManager {
 	next = () => {
 		const list = this.enabled();
 		if (!list.length) return;
-		const idx = this.currentId ? list.findIndex((i) => i.id === this.currentId) : -1;
+		const idx = this.currentId
+			? list.findIndex((i) => i.id === this.currentId)
+			: -1;
 		const target = list[(idx + 1) % list.length];
 		this.setCurrent(target.id, true);
 	};
@@ -131,7 +138,9 @@ export class MenuFocusManager {
 	prev = () => {
 		const list = this.enabled();
 		if (!list.length) return;
-		const idx = this.currentId ? list.findIndex((i) => i.id === this.currentId) : 0;
+		const idx = this.currentId
+			? list.findIndex((i) => i.id === this.currentId)
+			: 0;
 		const target = list[(idx - 1 + list.length) % list.length];
 		this.setCurrent(target.id, true);
 	};
@@ -142,10 +151,14 @@ export class MenuFocusManager {
 		const buf = this.typeaheadBuf;
 		const list = this.enabled();
 		if (list.length) {
-			const startIdx = (this.currentId ? list.findIndex((i) => i.id === this.currentId) : -1) + 1;
+			const startIdx =
+				(this.currentId ? list.findIndex((i) => i.id === this.currentId) : -1) +
+				1;
 			for (let offset = 0; offset < list.length; offset++) {
 				const item = list[(startIdx + offset) % list.length];
-				const text = (item.textValue ?? item.el.textContent ?? '').trim().toLowerCase();
+				const text = (item.textValue ?? item.el.textContent ?? "")
+					.trim()
+					.toLowerCase();
 				if (text.startsWith(buf)) {
 					this.setCurrent(item.id, true);
 					break;
@@ -153,7 +166,7 @@ export class MenuFocusManager {
 			}
 		}
 		this.typeaheadTimer = setTimeout(() => {
-			this.typeaheadBuf = '';
+			this.typeaheadBuf = "";
 		}, TYPEAHEAD_RESET_MS);
 	};
 
@@ -181,7 +194,7 @@ export class MenuFocusManager {
 
 	clear = () => {
 		this.setCurrent(null);
-		this.typeaheadBuf = '';
+		this.typeaheadBuf = "";
 		if (this.typeaheadTimer) clearTimeout(this.typeaheadTimer);
 	};
 }

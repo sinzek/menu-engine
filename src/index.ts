@@ -6,7 +6,7 @@
  */
 
 export type { Menu, MenuEngine } from "./core.ts";
-export { menuBuilder } from "./registry.ts";
+export { menus } from "./registry.ts";
 export { MenuStore } from "./store.ts";
 export { MenuFocusManager } from "./focus-manager.ts";
 export {

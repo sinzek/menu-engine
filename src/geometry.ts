@@ -40,7 +40,7 @@ export function calculateSafeBridge(
 	cursorExitPoint: MenuEngine.Point,
 	contentRect: DOMRect,
 ): MenuEngine.Point[] {
-	// Determine the relative position of the cursor to the content
+	// determine the relative position of the cursor to the content
 	const isLeft = cursorExitPoint.x < contentRect.left;
 	const isRight = cursorExitPoint.x > contentRect.right;
 	const isTop = cursorExitPoint.y < contentRect.top;
@@ -48,8 +48,7 @@ export function calculateSafeBridge(
 
 	const corners: MenuEngine.Point[] = [];
 
-	// Map the opposite/tangent corners of the content rect to form the widest
-	// possible triangle/polygon facing the cursor.
+	// map the opposite/tangent corners of the content rect to form the widest possible triangle/polygon facing the cursor
 	if (isLeft && isTop) {
 		corners.push({ x: contentRect.right, y: contentRect.top });
 		corners.push({ x: contentRect.left, y: contentRect.bottom });
@@ -76,7 +75,6 @@ export function calculateSafeBridge(
 		corners.push({ x: contentRect.right, y: contentRect.top });
 	}
 
-	// The polygon is the cursor point + the two extremities of the target rect
 	return [cursorExitPoint, ...corners];
 }
 

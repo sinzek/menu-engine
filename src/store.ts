@@ -22,11 +22,8 @@ export class MenuStore<Pages extends string | never = never> {
 	private currentRegion: MenuEngine.Region = "outside";
 	private anchor: Menu.Anchor = { type: "none" };
 
-	// Hierarchy. A child is closed automatically when its parent closes; the
-	// parent treats descendant content as part of its own interactive hitbox.
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	private parentStore: MenuStore<any> | MenuStore<never> | undefined;
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+
 	private children = new Set<MenuStore<any> | MenuStore<never>>();
 	private floatingEl: HTMLElement | null = null;
 	private suppressHoverOpen = false;
@@ -105,46 +102,39 @@ export class MenuStore<Pages extends string | never = never> {
 		this.safeBridge = bridge;
 	};
 
-	// --- HIERARCHY (submenus) ---
-
 	/**
 	 * Wire this store under a parent. The parent will:
 	 *  - close this store when it closes (cascade)
 	 *  - treat this store's floating content as part of its own hitbox
 	 *  - suppress its own escape-handling while this store is still open
 	 */
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+
 	public setParent = (
 		parent: MenuStore<any> | MenuStore<never> | undefined,
 	) => {
 		if (this.parentStore === parent) return;
 		if (this.parentStore) this.parentStore.removeChild(this);
 		this.parentStore = parent;
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+
 		if (parent) parent.addChild(this as MenuStore<any> | MenuStore<never>);
 	};
 
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	public addChild = (child: MenuStore<any> | MenuStore<never>) => {
 		this.children.add(child);
 	};
 
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	public removeChild = (child: MenuStore<any> | MenuStore<never>) => {
 		this.children.delete(child);
 	};
 
 	/** Direct children only. Use `walkDescendants` for the whole subtree. */
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	public getChildren = (): ReadonlySet<MenuStore<any> | MenuStore<never>> =>
 		this.children;
 
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	public getParent = (): MenuStore<any> | MenuStore<never> | undefined =>
 		this.parentStore;
 
 	/** Visit every descendant (children, grandchildren, …) depth-first. */
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	public walkDescendants = (
 		visit: (store: MenuStore<any> | MenuStore<never>) => void,
 	) => {
@@ -172,10 +162,6 @@ export class MenuStore<Pages extends string | never = never> {
 		this.state.status === "open" ||
 		this.state.status === "opening" ||
 		this.state.status === "closing";
-
-	// --- FOCUS MANAGER LINKAGE ---
-	// The focus manager lives in the UI adapter (React, in our case), but
-	// other code (submenus reaching across menus) needs to look it up by store.
 
 	private focusManager: MenuFocusManager | undefined;
 
@@ -297,7 +283,7 @@ export class MenuStore<Pages extends string | never = never> {
 
 		if (wasOpen !== isOpen) {
 			this.getEvents()?.onOpenChange?.(this.getEventContext());
-			// Cascade-close descendants when this menu closes.
+			// cascade-close descendants when this menu closes
 			if (!isOpen) {
 				for (const child of this.children) child.close();
 			}
@@ -411,10 +397,7 @@ export class MenuStore<Pages extends string | never = never> {
 		this.close();
 	};
 
-	// --- LIFECYCLE EVENT FORWARDERS ---
-	// The UI layer calls these to keep all event plumbing in one place. The
-	// store invokes the matching callback from the live `events` map, so inline
-	// callbacks always see fresh closures.
+	// VVV lifecycle event forwarders VVV
 
 	public fireKeyDown = (event: Menu.Events.KeyboardInteraction) => {
 		this.getEvents()?.onKeyDown?.({ ...this.getEventContext(), event });
@@ -436,8 +419,7 @@ export class MenuStore<Pages extends string | never = never> {
 		this.getEvents()?.onFocusChange?.({ ...this.getEventContext(), event });
 	};
 
-	// --- IMPERATIVE API ---
-
+	// VVV imperative API VVV
 	public open = (opts?: { bypassInteractOutsideGuard?: boolean }) => {
 		if (
 			!opts?.bypassInteractOutsideGuard &&
@@ -491,20 +473,17 @@ export class MenuStore<Pages extends string | never = never> {
 			this.timeoutId = undefined;
 		}
 
-		// Disassociate from parent to prevent parent -> child memory leaks
 		this.setParent(undefined);
 
-		// Disassociate from all children
 		for (const child of this.children) {
 			child.setParent(undefined);
 		}
 		this.children.clear();
 
-		// Clear all listeners to prevent memory leaks from long-lived observer closures
 		this.stateListeners.clear();
 		this.pageListeners.clear();
 		this.anchorListeners.clear();
-		
+
 		if (this.floatingEl) {
 			this.floatingEl = null;
 		}

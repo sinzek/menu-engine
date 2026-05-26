@@ -3,8 +3,6 @@ import type { Menu, MenuEngine } from "./core.ts";
 export type MenuType = Menu.Config["type"];
 
 /**
- * 1. The Trigger Compiler
- *
  * Normalizes user configuration into deterministic rules for the engine.
  * This resolves optional delays into concrete numbers, establishes defaults based on menu type,
  * and sets up exact behaviors (e.g., click vs hover).
@@ -66,8 +64,6 @@ export function compileTriggerRules(
 }
 
 /**
- * 2. The Decision Engine Factory
- *
  * Creates an evaluator that takes an interaction signal and decides whether to transition.
  * Enforces hysteresis, delays, and region logic cleanly without mutating state.
  */
@@ -101,7 +97,6 @@ export function createTriggerEvaluator(
 			}
 
 			if (signal === "pointer_up") {
-				// Cancel long press if the pointer is released before the delay finishes
 				if (
 					state.status === "opening" &&
 					state.transition.reason === "longPress"
@@ -118,7 +113,6 @@ export function createTriggerEvaluator(
 			switch (signal) {
 				case "pointer_move":
 					if (rules.openOnHover) {
-						// Hover over trigger -> open
 						if (currentRegion === "trigger" && isClosed) {
 							return {
 								shouldOpen: true,
@@ -130,7 +124,6 @@ export function createTriggerEvaluator(
 						}
 
 						if (isOpen || state.status === "closing") {
-							// For tooltips typically, hovering content closes it
 							if (currentRegion === "content" && rules.closeOnEnterContainer) {
 								return {
 									shouldOpen: false,
@@ -141,14 +134,12 @@ export function createTriggerEvaluator(
 								};
 							}
 
-							// If moving into a safe/interactive zone, stay open (cancel pending close)
 							if (
 								currentRegion === "trigger" ||
 								currentRegion === "content" ||
 								currentRegion === "safe"
 							) {
 								if (state.status === "closing") {
-									// Pure cancellation brings state back to 'open'
 									return {
 										shouldOpen: false,
 										shouldClose: false,
@@ -159,7 +150,6 @@ export function createTriggerEvaluator(
 						}
 					}
 
-					// Catch-all for when mouse leaves the hitbox via pointer_move
 					if (
 						rules.closeOnMouseLeaveHitbox &&
 						isOpen &&
@@ -176,7 +166,6 @@ export function createTriggerEvaluator(
 					break;
 
 				case "pointer_leave":
-					// Evaluated when leaving the entire "hitbox" explicitly
 					if (
 						rules.closeOnMouseLeaveHitbox &&
 						isOpen &&
@@ -190,7 +179,6 @@ export function createTriggerEvaluator(
 							cancelPrevious: true,
 						};
 					}
-					// If we are opening and we leave, cancel the opening
 					if (
 						rules.openOnHover &&
 						state.status === "opening" &&
@@ -260,8 +248,6 @@ export function createTriggerEvaluator(
 const generateTokenId = () => Math.random().toString(36).slice(2, 9);
 
 /**
- * 3. The State Reducer
- *
  * Applies a transition decision to the state.
  * Returns the new state object, minting tokens if delays are involved.
  */
@@ -269,7 +255,6 @@ export function transitionState(
 	currentState: MenuEngine.State,
 	decision: MenuEngine.TransitionDecision,
 ): MenuEngine.State {
-	// Handle pure cancellation (e.g., hovering back into the menu while it's closing)
 	if (!decision.shouldOpen && !decision.shouldClose) {
 		if (decision.cancelPrevious) {
 			if (currentState.status === "opening") return { status: "closed" };
@@ -278,7 +263,6 @@ export function transitionState(
 		return currentState;
 	}
 
-	// Handle Opening
 	if (decision.shouldOpen) {
 		if (decision.delayMs && decision.delayMs > 0) {
 			return {
@@ -301,7 +285,6 @@ export function transitionState(
 		return { status: "open" };
 	}
 
-	// Handle Closing
 	if (decision.shouldClose) {
 		if (decision.delayMs && decision.delayMs > 0) {
 			return {

@@ -309,4 +309,4 @@ pnpm run dev
 
 ## License
 
-ISC License. See `package.json` for details.
+MIT License. Use however you want.
