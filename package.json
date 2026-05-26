@@ -1,7 +1,7 @@
 {
   "name": "menu-engine",
-  "version": "1.0.0",
-  "description": "A robust TypeScript API for menu engineering",
+  "version": "0.0.2",
+  "description": "A framework-agnostic TypeScript API for building menus",
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
@@ -29,8 +29,8 @@
     "typescript",
     "api"
   ],
-  "author": "",
-  "license": "ISC",
+  "author": "sinzek",
+  "license": "MIT",
   "packageManager": "pnpm@10.33.2",
   "devDependencies": {
     "tsup": "^8.5.1",
