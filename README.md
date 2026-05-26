@@ -6,7 +6,7 @@ I also set it up to build dual ESM and CommonJS bundles using `tsup`, so it work
 
 ---
 
-## Cool Features
+## Features
 
 The engine runs on a deterministic state machine, so all your menu transitions are predictable without any weird or glitchy UI behaviors. It has built-in support for hover delays, close timeouts, custom long press triggers, and even includes Amazon-style safe hover triangle math to keep tooltips open when the mouse moves slightly outside of the hitbox. For keyboard accessibility, there is a roving tabindex focus manager built right in that gives you arrow key navigation and typeahead search out of the box. Plus, it has a zero leak `dispose()` API to safely clean up all timer, parent, and child linkages when you unmount menus. It compiles to a universal build that works in pure JavaScript, React, Vue, Svelte, or whatever frontend stack you prefer.
 
