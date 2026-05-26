@@ -1,0 +1,41 @@
+# Dependency Directories
+node_modules/
+jspm_packages/
+web_modules/
+
+# Build Outputs
+dist/
+lib/
+out/
+build/
+
+# Log Files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+*.log
+
+# IDEs and Editors
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# OS Files
+.DS_Store
+Thumbs.db
+
+# Test Coverage
+coverage/
+.nyc_output
+
+# Temp/Cache Directories
+.eslintcache
+.parcel-cache
+.turbo/
+.vitest/
